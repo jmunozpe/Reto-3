@@ -220,6 +220,165 @@ if __name__ == "__main__":
 
 
 ```
+# Ejercicio 1 
+
+El rectángulo debe inicializarse utilizando cualquiera de estos 3 métodos:
+
+Método 1: Esquina inferior izquierda (Punto) + ancho y alto
+Método 2: Centro(Punto) + ancho y alto
+Método 3: Dos esquinas opuestas (puntos), por ejemplo, inferior izquierda y superior derecha.
+ancho , alto , centro: atributos de instancia
+
+compute_area(): debe devolver el área del rectángulo
+
+compute_perimeter(): debe devolver el perímetro del rectángulo
+
+Cree una clase Square() que herede los atributos y métodos necesarios de Rectangle.
+
+Cree un método llamado compute_interference_point(Point) que devuelva si un punto está dentro de un rectángulo.
+
+Opcional: Defina un método llamado compute_interference_line() que devuelva si una línea o parte de ella está dentro de un rectángulo
+
+# Codigo
+
+```python
+
+from typing import List, Tuple
+
+
+class Point:
+    def __init__(self, x: float, y: float) -> None:
+        self.x = x
+        self.y = y
+
+    def __repr__(self) -> str:
+        return f"({self.x}, {self.y})"
+
+
+class Line:
+    def __init__(self, start: Point, end: Point) -> None:
+        self.start = start
+        self.end = end
+
+    def compute_length(self) -> float:
+        return ((self.end.x - self.start.x) ** 2 + (self.end.y - self.start.y) ** 2) ** 0.5
+
+    def compute_slope(self) -> float | None:
+        if self.end.x == self.start.x:
+            return None
+        return (self.end.y - self.start.y) / (self.end.x - self.start.x)
+
+    def compute_horizontal_cross(self) -> float | None:
+        slope = self.compute_slope()
+        if slope is None:
+            return self.start.x
+        if slope == 0:
+            return None
+        return self.start.x - self.start.y / slope
+
+    def compute_vertical_cross(self) -> float | None:
+        slope = self.compute_slope()
+        if slope is None:
+            return None
+        return self.start.y - slope * self.start.x
+
+    def __str__(self) -> str:
+        return (
+            f"Longitud: {self.compute_length()}, "
+            f"Pendiente: {self.compute_slope()}, "
+            f"Corte Horizontal: {self.compute_horizontal_cross()}, "
+            f"Corte Vertical: {self.compute_vertical_cross()}"
+        )
+
+
+class Rectangle:
+    def __init__(self, method: int, *args):
+        if method == 1:
+            bottom_left, width, height = args
+            self.width = width
+            self.height = height
+            self.center = Point(bottom_left.x + width / 2, bottom_left.y + height / 2)
+        elif method == 2:
+            center, width, height = args
+            self.width = width
+            self.height = height
+            self.center = center
+        elif method == 3:
+            p1, p2 = args
+            self.width = abs(p2.x - p1.x)
+            self.height = abs(p2.y - p1.y)
+            self.center = Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2)
+        elif method == 4:
+            l1, l2, l3, l4 = args
+            points = [l1.start, l1.end, l2.start, l2.end, l3.start, l3.end, l4.start, l4.end]
+            xs = [p.x for p in points]
+            ys = [p.y for p in points]
+            self.width = max(xs) - min(xs)
+            self.height = max(ys) - min(ys)
+            self.center = Point((max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2)
+        else:
+            raise ValueError("Método inválido")
+
+    def compute_area(self) -> float:
+        return self.width * self.height
+
+    def compute_perimeter(self) -> float:
+        return 2 * (self.width + self.height)
+
+    def bounds(self) -> Tuple[float, float, float, float]:
+        half_width = self.width / 2
+        half_height = self.height / 2
+        return (
+            self.center.x - half_width,
+            self.center.x + half_width,
+            self.center.y - half_height,
+            self.center.y + half_height,
+        )
+
+    def compute_interference_point(self, point: Point) -> bool:
+        xmin, xmax, ymin, ymax = self.bounds()
+        return xmin <= point.x <= xmax and ymin <= point.y <= ymax
+
+    def compute_interference_line(self, line: Line) -> bool:
+        return (self.compute_interference_point(line.start)
+                or self.compute_interference_point(line.end))
+
+
+class Square(Rectangle):
+    def __init__(self, method: int, *args):
+        if method == 1:
+            bottom_left, side = args
+            super().__init__(1, bottom_left, side, side)
+        elif method == 2:
+            center, side = args
+            super().__init__(2, center, side, side)
+        elif method == 3:
+            p1, p2 = args
+            side = max(abs(p2.x - p1.x), abs(p2.y - p1.y))
+            super().__init__(2, Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2), side, side)
+        elif method == 4:
+            l1, l2, l3, l4 = args
+            super().__init__(4, l1, l2, l3, l4)
+        else:
+            raise ValueError("Método inválido")
+
+
+if __name__ == "__main__":
+    r1 = Rectangle(1, Point(0, 0), 4, 3)
+    print("Área rectángulo:", r1.compute_area(), "Perímetro:", r1.compute_perimeter())
+
+    s1 = Square(1, Point(0, 0), 5)
+    print("Área cuadrado:", s1.compute_area(), "Perímetro:", s1.compute_perimeter())
+
+    p = Point(2, 2)
+    print("¿Punto dentro del rectángulo?", r1.compute_interference_point(p))
+
+    l = Line(Point(0, 0), Point(5, 5))
+    print("¿Línea cruza el rectángulo?", r1.compute_interference_line(l))
+
+```
 #
 
-En este reto se modela un restaurante aplicando herencia y composición en POO: la clase base MenuItem define los atributos name y price y un método calculate_total() para calcular el precio del ítem, mientras que las subclases Beverage, Appetizer, MainDish y Dessert heredan de ella y agregan características específicas (tamaño y si es alcohólica en bebidas, si es compartible en aperitivos, si es vegetariano en platos principales o sin azúcar en postres); la clase Order compone una lista de objetos MenuItem, permite agregar o eliminar artículos, calcular el subtotal, aplicar descuentos (10% si hay 3 o más platos principales, 12% si se pide combo principal+bebida+postre, o 8% si el subtotal supera $120.000) y generar una factura en formato de texto; se incluye un menú de ejemplo con más de 10 elementos distintos que cumple con el requisito mínimo.
+En este ejercicio se implementa la clase Rectangle, que puede inicializarse de tres formas: con esquina inferior izquierda y dimensiones, con el centro y dimensiones, o con dos esquinas opuestas; se definen como atributos de instancia el ancho, el alto y el centro, y métodos para calcular el área (compute_area) y perímetro (compute_perimeter); además, se crea la clase Square que hereda de Rectangle para representar cuadrados; se implementa compute_interference_point(Point) que indica si un punto está dentro del rectángulo, y opcionalmente compute_interference_line(Line) que permite verificar si una línea está total o parcialmente dentro del rectángulo.
+
+

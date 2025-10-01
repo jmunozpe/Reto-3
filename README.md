@@ -220,6 +220,11 @@ if __name__ == "__main__":
 
 
 ```
+
+#
+
+En este reto se modela un restaurante aplicando herencia, composición y encapsulamiento en POO: la clase base MenuItem define los atributos name y price y un método calculate_total() para calcular el precio del ítem, mientras que las subclases Beverage, Appetizer, MainDish y Dessert heredan de ella y agregan características específicas (tamaño y si es alcohólica en bebidas, si es compartible en aperitivos, si es vegetariano en platos principales o sin azúcar en postres); la clase Order compone una lista de objetos MenuItem, permite agregar o eliminar artículos, calcular el subtotal, aplicar descuentos (10% si hay 3 o más platos principales, 12% si se pide combo principal+bebida+postre, o 8% si el subtotal supera $120.000) y generar una factura en formato de texto; se incluye un menú de ejemplo con más de 10 elementos distintos que cumple con el requisito mínimo.
+
 # Ejercicio 1 
 
 El rectángulo debe inicializarse utilizando cualquiera de estos 3 métodos:

@@ -12,7 +12,7 @@ Cree un diagrama de clases con todas las clases y sus relaciones. El menú debe 
 
 #Diagrama UML
 
-```
+```mermaid
 
 classDiagram
     class MenuItem {
